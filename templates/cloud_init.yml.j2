@@ -10,7 +10,7 @@ bootcmd:
 write_files:
 - content: |
     {
-        "insecure-registries": ["registry.nutanixdemo.com"]
+        "insecure-registries": ["{{REGISTRY_MIRROR_URL}}"]
     }
   path: /etc/docker/daemon.json
 runcmd:

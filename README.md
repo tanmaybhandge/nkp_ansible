@@ -62,7 +62,7 @@ For more details and NKP pre-requisites, refer to the NKP platform guide.
         NUTANIX_PRISM_ELEMENT_CLUSTER_NAME: ""  # Prism Element cluster name
         NUTANIX_SUBNET_NAME: ""  # Example: primary
         NUTANIX_STORAGE_CONTAINER_NAME: ""  # Prism storage container
-        REGISTRY_MIRROR_URL: ""  # Required on Nutanix HPOC
+        REGISTRY_MIRROR_URL: "registry-1.docker.io"  # Replace if using a private registry
     ```
 
     > ⚠️ **Note:** All the variables are mandatory.

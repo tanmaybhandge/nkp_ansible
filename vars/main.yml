@@ -15,4 +15,4 @@ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME:              # Update with the NKP Rocky im
 NUTANIX_PRISM_ELEMENT_CLUSTER_NAME:               # Prism Element cluster name - Ex: PHX-POC207
 NUTANIX_SUBNET_NAME:                              # Ex: primary
 NUTANIX_STORAGE_CONTAINER_NAME:                   # Change to your preferred Prism storage container
-REGISTRY_MIRROR_URL:                              # Required on Nutanix HPOC
+REGISTRY_MIRROR_URL: registry-1.docker.io         # Replace if using a private registry
