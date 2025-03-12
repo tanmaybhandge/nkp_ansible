@@ -61,7 +61,9 @@ For more details and NKP pre-requisites, refer to the NKP platform guide.
         NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME: ""  # NKP Rocky image name
         NUTANIX_PRISM_ELEMENT_CLUSTER_NAME: ""  # Prism Element cluster name
         NUTANIX_SUBNET_NAME: ""  # Example: primary
-        NUTANIX_STORAGE_CONTAINER_NAME: ""  # Prism storage container
+        NUTANIX_STORAGE_CONTAINER_NAME: ""  # Prism storage container 
+        DOCKER_USERNAME: "" #Enter your docker username
+        DOCKER_PASSWORD: "" #Enter your docker password
     ```
 
     > ⚠️ **Note:** All the variables are mandatory.
