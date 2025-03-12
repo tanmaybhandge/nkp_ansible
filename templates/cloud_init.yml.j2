@@ -7,12 +7,6 @@ users:
       - "{{ SSH_PUBLIC_KEY }}"
 bootcmd:
 - mkdir -p /etc/docker
-write_files:
-- content: |
-    {
-        "insecure-registries": ["{{REGISTRY_MIRROR_URL}}"]
-    }
-  path: /etc/docker/daemon.json
 runcmd:
 - '[ ! -f "/etc/yum.repos.d/nutanix_rocky9.repo" ] || mv -f /etc/yum.repos.d/nutanix_rocky9.repo /etc/yum.repos.d/nutanix_rocky9.repo.disabled'
 - dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
