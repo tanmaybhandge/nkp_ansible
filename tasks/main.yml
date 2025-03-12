@@ -1,0 +1,171 @@
+---
+# tasks file for nkp_deploy
+- name: Check if NKP rock image is present
+  nutanix.ncp.ntnx_images_info:
+    nutanix_host: "{{ NUTANIX_ENDPOINT }}"
+    nutanix_username: "{{ NUTANIX_USER }}"
+    nutanix_password: "{{ NUTANIX_PASSWORD }}"
+    validate_certs: false
+    filter:
+      name: "{{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }}"
+  register: image_result
+
+
+- name: Debug image check output
+  debug:
+    var: image_result
+
+
+- name: Upload NKP image to PC if not present
+  nutanix.ncp.ntnx_images:
+    state: "present"
+    nutanix_host: "{{ NUTANIX_ENDPOINT }}"
+    nutanix_username: "{{ NUTANIX_USER }}"
+    nutanix_password: "{{ NUTANIX_PASSWORD }}"
+    validate_certs: false
+    source_uri: "{{ image_url }}"
+    clusters:
+      - name: "{{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }}"
+    name: "{{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }}"
+    desc: "Image uploaded for NKP deploy by Ansible"
+    image_type: "DISK_IMAGE"
+    wait: true
+  when: image_result.response.metadata.length == 0
+
+
+- name: Check if VM "nkp_bastion" exists
+  nutanix.ncp.ntnx_vms_info:
+    nutanix_host: "{{ NUTANIX_ENDPOINT }}"
+    nutanix_username: "{{ NUTANIX_USER }}"
+    nutanix_password: "{{ NUTANIX_PASSWORD }}"
+    validate_certs: false
+    filter:
+      vm_name: "nkp_bastion"
+    kind: vm
+  register: bootvm_present
+
+
+- name: Template a file to /etc/file.conf
+  ansible.builtin.template:
+    src: nkp_deploy/templates/cloud_init.yml.j2
+    dest: nkp_deploy/files/cloud_init.yml
+
+
+- name: Create Bastion VM if not present
+  nutanix.ncp.ntnx_vms:
+    state: present
+    name: "nkp_bastion"
+    timezone: "UTC"
+    nutanix_host: "{{ NUTANIX_ENDPOINT }}"
+    nutanix_username: "{{ NUTANIX_USER }}"
+    nutanix_password: "{{ NUTANIX_PASSWORD }}"
+    validate_certs: false
+    cluster:
+      name: "{{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }}"
+    networks:
+      - is_connected: true
+        subnet:
+          name: "{{ NUTANIX_SUBNET_NAME }}"
+    disks:
+      - type: "DISK"
+        size_gb: 20
+        clone_image:
+          name: "{{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }}"
+        bus: "SCSI"
+    vcpus: 4
+    cores_per_vcpu: 1
+    memory_gb: 8
+    guest_customization:
+      type: "cloud_init"
+      script_path: "nkp_deploy/files/cloud_init.yml"
+      is_overridable: true
+  register: bootvm_out
+  when: bootvm_present.response.metadata.length == 0
+
+
+- name: Extract Bastion VM IP address
+  set_fact:
+    bootvm_ip: "{{ bootvm_out.response.spec.resources.nic_list[0].ip_endpoint_list[0].ip }}"
+  when: bootvm_out.changed
+
+#- name: Add new Bastion VM to inventory.ini
+#  ansible.builtin.lineinfile:
+#    path: "inventory.ini"
+#    line: "nkp_bastion ansible_host={{ bootvm_ip }} ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_user=nutanix"
+#    insertafter: "[nkp_boot]"
+#    create: yes
+
+- name: Add new Bastion VM to in-memory inventory
+  ansible.builtin.add_host:
+    name: nkp_bastion
+    groups: nkp_boot
+    ansible_host: "{{ bootvm_ip }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_user: nutanix
+
+- name: Refresh inventory
+  ansible.builtin.meta: refresh_inventory
+
+# NKP Deploy - Second Module
+- name: Wait for Bastion VM to be ready
+  ansible.builtin.pause:
+    seconds: 30
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+- name: Download and extract NKP binary
+  ansible.builtin.shell: "curl -fsSL '{{ nkp_url }}' | tar xz -C /usr/local/bin -- nkp"
+  become: true
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+- name: Check if NKP is installed
+  ansible.builtin.command: nkp version
+  register: nkp_version_output
+  ignore_errors: true
+  changed_when: false
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+
+- name: Create NKP cluster
+  ansible.builtin.shell: |
+    export NUTANIX_USER={{ NUTANIX_USER }}
+    export NUTANIX_PASSWORD={{ NUTANIX_PASSWORD }}
+    nkp create cluster nutanix -c {{ CLUSTER_NAME }} \
+      --kind-cluster-image {{ REGISTRY_MIRROR_URL }}/mesosphere/konvoy-bootstrap:v{{ NKP_VERSION }} \
+      --endpoint https://{{ NUTANIX_ENDPOINT }}:{{ NUTANIX_PORT }} \
+      --insecure \
+      --kubernetes-service-load-balancer-ip-range {{ LB_IP_RANGE }} \
+      --control-plane-endpoint-ip {{ CONTROL_PLANE_ENDPOINT_IP }} \
+      --control-plane-vm-image {{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }} \
+      --control-plane-prism-element-cluster {{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }} \
+      --control-plane-subnets {{ NUTANIX_SUBNET_NAME }} \
+      --control-plane-replicas 1 \
+      --worker-vm-image {{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }} \
+      --worker-prism-element-cluster {{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }} \
+      --worker-subnets {{ NUTANIX_SUBNET_NAME }} \
+      --worker-replicas 2 \
+      --csi-storage-container {{ NUTANIX_STORAGE_CONTAINER_NAME }} \
+      --registry-mirror-url http://{{ REGISTRY_MIRROR_URL }} \
+      --self-managed
+  register: nkp_output
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+- name: Display NKP cluster creation output
+  debug:
+    var: nkp_output
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+- name: Retrieve NKP dashboard information
+  ansible.builtin.command: "nkp get dashboard --kubeconfig=./{{ CLUSTER_NAME }}.conf"
+  register: dashboard_output
+  changed_when: false
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['nkp_boot'] }}"
+
+- name: Display NKP dashboard output
+  ansible.builtin.debug:
+    var: dashboard_output.results[0].stdout_lines
