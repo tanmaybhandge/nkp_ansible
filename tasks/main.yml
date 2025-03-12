@@ -45,10 +45,10 @@
   register: bootvm_present
 
 
-- name: Template a file to /etc/file.conf
+- name: Template te cloudinit file
   ansible.builtin.template:
-    src: nkp_deploy/templates/cloud_init.yml.j2
-    dest: nkp_deploy/files/cloud_init.yml
+    src: templates/cloud_init.yml.j2
+    dest: ./cloud_init.yml
 
 
 - name: Create Bastion VM if not present
@@ -77,7 +77,7 @@
     memory_gb: 8
     guest_customization:
       type: "cloud_init"
-      script_path: "nkp_deploy/files/cloud_init.yml"
+      script_path: "./cloud_init.yml"
       is_overridable: true
   register: bootvm_out
   when: bootvm_present.response.metadata.length == 0
