@@ -146,9 +146,9 @@
       --worker-subnets {{ NUTANIX_SUBNET_NAME }} \
       --worker-replicas 2 \
       --csi-storage-container {{ NUTANIX_STORAGE_CONTAINER_NAME }} \
-      --registry-mirror-url="https://registry-1.docker.io" \ 
-      --registry-mirror-username={{ DOCKER_USERNAME }} \ 
-      --registry-mirror-password={{ DOCKER_PASSWORD }} \
+      --registry-url "https://registry-1.docker.io" \ 
+      --registry-username {{ DOCKER_USERNAME }} \ 
+      --registry-password {{ DOCKER_PASSWORD }} \
       --self-managed
   register: nkp_output
   delegate_to: "{{ item }}"
