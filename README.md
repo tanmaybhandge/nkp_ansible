@@ -6,6 +6,8 @@ This role automates the deployment of a Nutanix Kubernetes Platform (NKP) manage
 ## What is NKP?
 NKP enables organizations to easily overcome Kubernetes Day 2 operational barriers, such as security, observability, reliability, upgradeability, backup and restore, policy management, and governance. This saves time and resources, enabling organizations to operationalize production-ready cloud-native environments in minutes rather than weeks or months.
 
+<img width="1609" alt="nkp_intro" src="https://github.com/user-attachments/assets/f8cbddf5-ac04-4f19-82f7-855487cc2b06" />
+
 For more details and NKP pre-requisites, refer to the NKP platform guide.
 [NKP platform guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Kubernetes-Platform-v2_14:Nutanix-Kubernetes-Platform-v2_14)
 
