@@ -9,7 +9,7 @@ NKP enables organizations to easily overcome Kubernetes Day 2 operational barrie
 For more details and NKP pre-requisites, refer to the NKP platform guide.
 [NKP platform guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Kubernetes-Platform-v2_14:Nutanix-Kubernetes-Platform-v2_14)
 
-## Tasks Performed
+## Tasks performed by this role:
 
 ### 1. NKP Node OS Image Check and Download
 - Verifies if the NKP Rocky Linux image is available in Nutanix Prism Central.
@@ -30,12 +30,22 @@ For more details and NKP pre-requisites, refer to the NKP platform guide.
 
 ## Usage
 
+### Pre-requisites:
+Since we are deploying in a Nutanix environment, install the `nutanix.ncp` ansible collection by running the below command on your control node:  
+
+    ansible-galaxy collection install nutanix.ncp
+
+### Steps:
 1. Download this role to the Ansible control plane from Ansible Galaxy by running the following command:
     ```sh
     ansible-galaxy role install rathnaarun77.nkp_ansible
     ```
 
-2. Download the `inventory.ini` file from this repo and pass it while you run the Ansible playbook, it just contains the localhost so no modifications required.
+2. Create or download the `inventory.ini` file from this repo and pass it while you run the Ansible playbook, it just contains the localhost so no modifications required.
+   ```yaml
+   [localhost]
+   localhost ansible_connection=local
+   ```
 
 3. Below is a sample `playbook.yml` file utilising this role:
     ```yaml
