@@ -87,5 +87,9 @@ Since we are deploying in a Nutanix environment, install the `nutanix.ncp` ansib
 
 5. Once the playbook completes without any errors, you will get the NKP dashboard URL and the login credentials as output of the final task.
 
+Disclaimer:
+
+The views and opinions expressed in this repository are my own and do not necessarily reflect those of any company or organization. The information provided is based on personal experience and research. It is presented as-is without any warranties. For official guidance, please refer to the official documentation or support channels.
+
 ## License
 MIT
