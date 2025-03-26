@@ -140,11 +140,11 @@
       --control-plane-vm-image {{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }} \
       --control-plane-prism-element-cluster {{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }} \
       --control-plane-subnets {{ NUTANIX_SUBNET_NAME }} \
-      --control-plane-replicas 1 \
+      --control-plane-replicas 3 \
       --worker-vm-image {{ NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME }} \
       --worker-prism-element-cluster {{ NUTANIX_PRISM_ELEMENT_CLUSTER_NAME }} \
       --worker-subnets {{ NUTANIX_SUBNET_NAME }} \
-      --worker-replicas 2 \
+      --worker-replicas 3 \
       --csi-storage-container {{ NUTANIX_STORAGE_CONTAINER_NAME }} \
       --registry-url "https://registry-1.docker.io" \ 
       --registry-username {{ DOCKER_USERNAME }} \ 
