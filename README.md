@@ -80,6 +80,31 @@ Since we are deploying in a Nutanix environment, install the `nutanix.ncp` ansib
 
     > ⚠️ **Note:** All the variables are mandatory.
 
+    > **Sample variables**
+
+
+    ```yaml
+    image_url: "https://download.nutanix.com/downloads/nkp/v2.12.2/nkp-rocky-9.4-release-1.29.9-20250409195145.qcow2?Expires=1747167995&Key-Pai........_"  # Download URL for NKP Rocky node OS image
+    SSH_PUBLIC_KEY: "ssh-rsa AAAAB3NzaC1yc2EAAAAD......."  # SSH public key of Ansible control node
+    nkp_url: "https://download.nutanix.com/downloads/nkp/v2.12.2/......"  # NKP binary download link for Linux
+    NKP_VERSION: "2.12.2"  # NKP version to install
+    CLUSTER_NAME: "mgmt"  # NKP cluster name
+    NUTANIX_USER: "admin"  # Prism Central username
+    NUTANIX_PASSWORD: 'nx2Tech546!'  # Keep the password enclosed between single quotes
+    NUTANIX_ENDPOINT: "10.38.83.7"  # Prism Central IP address
+    NUTANIX_PORT: "9440"  # Prism Central port
+    LB_IP_RANGE: "10.38.83.101-10.38.83.101"  # Load balancer IP range
+    CONTROL_PLANE_ENDPOINT_IP: "10.38.83.102"  # Kubernetes VIP
+    NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME: "nkp-rocky-9.4-release-1.29.9-20250409195145.qcow2"  # NKP Rocky image name
+    NUTANIX_PRISM_ELEMENT_CLUSTER_NAME: "PHX-POC311"  # Prism Element cluster name
+    NUTANIX_SUBNET_NAME: "primary-PHX-POC311"  # Example: primary
+    NUTANIX_STORAGE_CONTAINER_NAME: "default"  # Prism storage container 
+    DOCKER_USERNAME: "tanmay238" #Enter your docker username
+    DOCKER_PASSWORD: "Tanmay@123" #Enter your docker password
+    ```
+    
+
+
 4. Finally, to trigger the playbook, run the following command:
     ```sh
     ansible-playbook -i inventory.ini playbook.yml
