@@ -90,7 +90,7 @@ Since we are deploying in a Nutanix environment, install the `nutanix.ncp` ansib
     NKP_VERSION: "2.12.2"  # NKP version to install
     CLUSTER_NAME: "mgmt"  # NKP cluster name
     NUTANIX_USER: "admin"  # Prism Central username
-    NUTANIX_PASSWORD: 'nx2Tech546!'  # Keep the password enclosed between single quotes
+    NUTANIX_PASSWORD: '!'  # Keep the password enclosed between single quotes
     NUTANIX_ENDPOINT: "10.38.83.7"  # Prism Central IP address
     NUTANIX_PORT: "9440"  # Prism Central port
     LB_IP_RANGE: "10.38.83.101-10.38.83.101"  # Load balancer IP range
@@ -99,8 +99,8 @@ Since we are deploying in a Nutanix environment, install the `nutanix.ncp` ansib
     NUTANIX_PRISM_ELEMENT_CLUSTER_NAME: "PHX-POC311"  # Prism Element cluster name
     NUTANIX_SUBNET_NAME: "primary-PHX-POC311"  # Example: primary
     NUTANIX_STORAGE_CONTAINER_NAME: "default"  # Prism storage container 
-    DOCKER_USERNAME: "tanmay238" #Enter your docker username
-    DOCKER_PASSWORD: "Tanmay@123" #Enter your docker password
+    DOCKER_USERNAME: "" #Enter your docker username
+    DOCKER_PASSWORD: "" #Enter your docker password
     ```
     
 
